@@ -24,9 +24,9 @@ class ResponsiveScreen extends StatelessWidget {
   final double mainAreaProminence;
 
   const ResponsiveScreen({
+    this.topMessageArea = const SizedBox.shrink(),
     required this.squarishMainArea,
     required this.rectangularMenuArea,
-    this.topMessageArea = const SizedBox.shrink(),
     this.mainAreaProminence = 0.8,
     super.key,
   });
