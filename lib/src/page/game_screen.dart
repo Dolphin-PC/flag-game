@@ -1,10 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:game_template/src/page/include/game_screen_top.dart';
 import 'package:game_template/src/state/level_state.dart';
 import 'package:game_template/src/style/palette.dart';
 import 'package:game_template/src/style/responsive_screen.dart';
 import 'package:game_template/util/util.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+
+import '../widget/common/screen_top.dart';
 
 class GameScreen extends StatefulWidget {
   final LevelState level;
@@ -21,22 +25,21 @@ class _GameScreenState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
     final palette = context.watch<Palette>();
+    final image_prefix = '2x';
 
     return Scaffold(
       backgroundColor: palette.backgroundLevelSelection,
       body: ResponsiveScreen(
-        topMessageArea: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        topMessageArea: Column(
           children: [
-            const Text(
-              'Game',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Permanent Marker',
-                fontSize: 55,
-                height: 1,
-              ),
+            ScreenTop(
+              imageName: 'back',
+              imageAction: () {
+                GoRouter.of(context).go('/play');
+              },
+              title: '',
             ),
+            GameScreenTop(),
           ],
         ),
         squarishMainArea: Center(
@@ -44,7 +47,7 @@ class _GameScreenState extends State<GameScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Util.loadImage('game/2x/set-${flagObj['blue']}-${flagObj['white']}'),
+              Util.loadImage('game/$image_prefix/set-${flagObj['blue']}-${flagObj['white']}'),
             ],
           ),
         ),
@@ -55,12 +58,14 @@ class _GameScreenState extends State<GameScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 InkWell(
-                  onTap: () => onClickArrow('blue', 1),
-                  child: Util.loadImage('game/2x/blue-up'),
+                  onTapDown: (details) => onTapDownArrow('blue', 2),
+                  onTapUp: (details) => onTapUpArrow('blue'),
+                  child: Util.loadImage('game/$image_prefix/blue-up'),
                 ),
                 InkWell(
-                  onTap: () => onClickArrow('white', 1),
-                  child: Util.loadImage('game/2x/white-up'),
+                  onTapDown: (details) => onTapDownArrow('white', 2),
+                  onTapUp: (details) => onTapUpArrow('white'),
+                  child: Util.loadImage('game/$image_prefix/white-up'),
                 ),
               ],
             ),
@@ -69,12 +74,14 @@ class _GameScreenState extends State<GameScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 InkWell(
-                  onTap: () => onClickArrow('blue', -1),
-                  child: Util.loadImage('game/2x/blue-down'),
+                  onTapDown: (details) => onTapDownArrow('blue', 0),
+                  onTapUp: (details) => onTapUpArrow('blue'),
+                  child: Util.loadImage('game/$image_prefix/blue-down'),
                 ),
                 InkWell(
-                  onTap: () => onClickArrow('white', -1),
-                  child: Util.loadImage('game/2x/white-down'),
+                  onTapDown: (details) => onTapDownArrow('white', 0),
+                  onTapUp: (details) => onTapUpArrow('white'),
+                  child: Util.loadImage('game/$image_prefix/white-down'),
                 ),
               ],
             )
@@ -84,11 +91,20 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
+  /*deprecated*/
   void onClickArrow(String flag, int direction) {
     int current = flagObj[flag] ?? 1;
     int next = current + direction;
     if (next == -1 || next == 3) return;
 
     setState(() => flagObj[flag] = next);
+  }
+
+  void onTapDownArrow(String flag, int direction) {
+    setState(() => flagObj[flag] = direction);
+  }
+
+  void onTapUpArrow(String flag) {
+    setState(() => flagObj[flag] = 1);
   }
 }

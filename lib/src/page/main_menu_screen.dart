@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:game_template/src/widget/common/screen_top.dart';
 import 'package:game_template/util/util.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -16,27 +17,14 @@ class MainMenuScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: palette.backgroundMain,
       body: ResponsiveScreen(
-        topMessageArea: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Util.loadImage('game/cross-flag'),
-            const Text(
-              'Flag Game!',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Permanent Marker',
-                fontSize: 55,
-                height: 1,
-              ),
-            ),
-          ],
+        // topMessageArea: new GameScreenTop(),
+        topMessageArea: ScreenTop(
+          imageName: 'game/cross-flag',
+          imageAction: () {},
+          title: 'Flag Game!',
         ),
         squarishMainArea: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [Util.loadImage('game/user')],
-          ),
+          child: Util.loadImage('game/user'),
         ),
         rectangularMenuArea: Column(
           mainAxisAlignment: MainAxisAlignment.end,
