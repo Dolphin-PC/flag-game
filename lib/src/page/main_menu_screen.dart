@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:game_template/src/widget/common/screen_top.dart';
 import 'package:game_template/util/util.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 
-import '../style/palette.dart';
 import '../style/responsive_screen.dart';
 
 class MainMenuScreen extends StatelessWidget {
@@ -12,10 +10,10 @@ class MainMenuScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final palette = context.watch<Palette>();
+    // final palette = context.watch<Palette>();
 
     return Scaffold(
-      backgroundColor: palette.backgroundMain,
+      // backgroundColor: palette.backgroundMain,
       body: ResponsiveScreen(
         // topMessageArea: new GameScreenTop(),
         topMessageArea: ScreenTop(
@@ -31,7 +29,8 @@ class MainMenuScreen extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () {
-                GoRouter.of(context).go('/play');
+                // GoRouter.of(context).go('/play');
+                Navigator.pushNamed(context, '/play');
               },
               child: const Text('Play'),
             ),

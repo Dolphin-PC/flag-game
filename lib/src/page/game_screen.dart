@@ -1,41 +1,46 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:game_template/src/page/include/game_screen_top.dart';
-import 'package:game_template/src/state/level_state.dart';
-import 'package:game_template/src/style/palette.dart';
+import 'package:game_template/src/provider/provider_game.dart';
+import 'package:game_template/src/state/order.dart';
 import 'package:game_template/src/style/responsive_screen.dart';
 import 'package:game_template/util/util.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../enum/flag.dart';
+import '../provider/provider_level.dart';
 import '../widget/common/screen_top.dart';
 
 class GameScreen extends StatefulWidget {
-  final LevelState level;
-
-  const GameScreen(this.level, {super.key});
+  const GameScreen({super.key});
 
   @override
   State<GameScreen> createState() => _GameScreenState();
 }
 
 class _GameScreenState extends State<GameScreen> {
-  Map<String, int> flagObj = {'blue': 1, 'white': 1};
+  final image_prefix = '2x';
+  Map<String, Flag> flagObj = {'blue': Flag.CENTER, 'white': Flag.CENTER};
+
+  late ProviderLevel _providerLevel;
+  late ProviderGame _providerGame;
+
+  Image showFlag() {
+    return Util.loadImage('game/$image_prefix/set-${flagObj['blue']!.index}-${flagObj['white']!.index}');
+  }
 
   @override
   Widget build(BuildContext context) {
-    final palette = context.watch<Palette>();
-    final image_prefix = '2x';
+    _providerLevel = Provider.of<ProviderLevel>(context, listen: false);
+    _providerGame = Provider.of<ProviderGame>(context, listen: false);
 
     return Scaffold(
-      backgroundColor: palette.backgroundLevelSelection,
       body: ResponsiveScreen(
         topMessageArea: Column(
           children: [
             ScreenTop(
               imageName: 'back',
               imageAction: () {
-                GoRouter.of(context).go('/play');
+                Navigator.pop(context);
               },
               title: '',
             ),
@@ -47,7 +52,7 @@ class _GameScreenState extends State<GameScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Util.loadImage('game/$image_prefix/set-${flagObj['blue']}-${flagObj['white']}'),
+              showFlag(),
             ],
           ),
         ),
@@ -58,12 +63,12 @@ class _GameScreenState extends State<GameScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 InkWell(
-                  onTapDown: (details) => onTapDownArrow('blue', 2),
+                  onTapDown: (details) => onTapDownArrow('blue', Flag.UP),
                   onTapUp: (details) => onTapUpArrow('blue'),
                   child: Util.loadImage('game/$image_prefix/blue-up'),
                 ),
                 InkWell(
-                  onTapDown: (details) => onTapDownArrow('white', 2),
+                  onTapDown: (details) => onTapDownArrow('white', Flag.UP),
                   onTapUp: (details) => onTapUpArrow('white'),
                   child: Util.loadImage('game/$image_prefix/white-up'),
                 ),
@@ -74,12 +79,12 @@ class _GameScreenState extends State<GameScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 InkWell(
-                  onTapDown: (details) => onTapDownArrow('blue', 0),
+                  onTapDown: (details) => onTapDownArrow('blue', Flag.DOWN),
                   onTapUp: (details) => onTapUpArrow('blue'),
                   child: Util.loadImage('game/$image_prefix/blue-down'),
                 ),
                 InkWell(
-                  onTapDown: (details) => onTapDownArrow('white', 0),
+                  onTapDown: (details) => onTapDownArrow('white', Flag.DOWN),
                   onTapUp: (details) => onTapUpArrow('white'),
                   child: Util.loadImage('game/$image_prefix/white-down'),
                 ),
@@ -91,20 +96,14 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  /*deprecated*/
-  void onClickArrow(String flag, int direction) {
-    int current = flagObj[flag] ?? 1;
-    int next = current + direction;
-    if (next == -1 || next == 3) return;
-
-    setState(() => flagObj[flag] = next);
-  }
-
-  void onTapDownArrow(String flag, int direction) {
-    setState(() => flagObj[flag] = direction);
+  void onTapDownArrow(String flag, Flag direction) {
+    setState(() {
+      flagObj[flag] = direction;
+      _providerGame.compareOrder(Order.createUser(flagName: flag, flagDirection: direction));
+    });
   }
 
   void onTapUpArrow(String flag) {
-    setState(() => flagObj[flag] = 1);
+    setState(() => flagObj[flag] = Flag.CENTER);
   }
 }

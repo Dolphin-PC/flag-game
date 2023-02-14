@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../provider/provider_game.dart';
 
 class CustomProgressIndicator extends StatefulWidget {
   const CustomProgressIndicator({Key? key}) : super(key: key);
@@ -13,14 +16,12 @@ class _CustomProgressIndicatorState extends State<CustomProgressIndicator> with 
   @override
   void initState() {
     animationController = AnimationController(
-      /// [AnimationController]s can be created with `vsync: this` because of
-      /// [TickerProviderStateMixin].
       vsync: this,
       duration: const Duration(seconds: 5),
     )..addListener(() {
         setState(() {});
       });
-    animationController.repeat();
+    animationController.forward(from: 0);
     super.initState();
   }
 
@@ -31,17 +32,25 @@ class _CustomProgressIndicatorState extends State<CustomProgressIndicator> with 
   }
 
   void switched(bool determinate) {
+    print('determinate');
+
     if (determinate) {
       animationController.stop();
     } else {
-      animationController
-        ..forward(from: animationController.value)
-        ..repeat();
+      animationController..forward(from: animationController.value);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    ProviderGame _providerGame = Provider.of<ProviderGame>(context, listen: true);
+
+    if (_providerGame.isCorrectEachOrder) {
+      animationController.forward(from: 0);
+    }
+
+    print(animationController.value);
+
     return LinearProgressIndicator(
       color: Colors.green,
       minHeight: 30,

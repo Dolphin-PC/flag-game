@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:game_template/src/page/include/custom_progress_indicator.dart';
 import 'package:game_template/src/page/include/order_text.dart';
 import 'package:game_template/src/page/include/status_circle.dart';
+import 'package:game_template/src/provider/provider_game.dart';
+import 'package:game_template/src/provider/provider_level.dart';
 import 'package:game_template/util/util.dart';
+import 'package:provider/provider.dart';
 
 class GameScreenTop extends StatefulWidget {
   const GameScreenTop({Key? key}) : super(key: key);
@@ -14,6 +17,9 @@ class GameScreenTop extends StatefulWidget {
 class _GameScreenTopState extends State<GameScreenTop> {
   @override
   Widget build(BuildContext context) {
+    ProviderLevel _providerLevel = Provider.of<ProviderLevel>(context, listen: false);
+    ProviderGame _providerGame = Provider.of<ProviderGame>(context, listen: false);
+
     return Column(
       children: [
         Row(
@@ -26,14 +32,15 @@ class _GameScreenTopState extends State<GameScreenTop> {
         ),
         Util.gap(12.0),
         Container(
-          height: 100.0,
+          // height: 100.0,
           width: double.maxFinite,
           decoration: BoxDecoration(border: Border.all(color: Colors.black)),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              OrderText(),
-              OrderText(),
+              OrderText(
+                order: _providerGame.currentOrder,
+              )
             ],
           ),
         )
